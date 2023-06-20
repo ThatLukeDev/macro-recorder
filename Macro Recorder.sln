@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Macro Recorder", "Macro Recorder\Macro Recorder.csproj", "{17E8A82D-235B-4DCD-A29D-06362EADF608}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Macro Recorder Setup", "Macro Recorder Setup\Macro Recorder Setup.vdproj", "{B3E346BD-CFDF-4035-B513-15981C00D4DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17E8A82D-235B-4DCD-A29D-06362EADF608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17E8A82D-235B-4DCD-A29D-06362EADF608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17E8A82D-235B-4DCD-A29D-06362EADF608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17E8A82D-235B-4DCD-A29D-06362EADF608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E346BD-CFDF-4035-B513-15981C00D4DF}.Debug|Any CPU.ActiveCfg = Debug
+		{B3E346BD-CFDF-4035-B513-15981C00D4DF}.Debug|Any CPU.Build.0 = Debug
+		{B3E346BD-CFDF-4035-B513-15981C00D4DF}.Release|Any CPU.ActiveCfg = Release
+		{B3E346BD-CFDF-4035-B513-15981C00D4DF}.Release|Any CPU.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69C13D9C-B233-47F0-843D-A28007F0E98D}
+	EndGlobalSection
+EndGlobal
