@@ -29,6 +29,7 @@ namespace Macro_Recorder
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.cboType = new System.Windows.Forms.ComboBox();
             this.txtTypeInfo = new System.Windows.Forms.TextBox();
@@ -48,6 +49,7 @@ namespace Macro_Recorder
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.settingsPic = new System.Windows.Forms.PictureBox();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.settingsPic)).BeginInit();
             this.SuspendLayout();
@@ -106,6 +108,8 @@ namespace Macro_Recorder
             this.txtTypeInfo.Size = new System.Drawing.Size(487, 13);
             this.txtTypeInfo.TabIndex = 2;
             this.txtTypeInfo.Text = "Unused";
+            this.txtTypeInfo.DoubleClick += new System.EventHandler(this.txtTpeInfo_Click);
+            this.txtTypeInfo.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtTypeInfo_PreviewKeyDown);
             // 
             // btnSubmit
             // 
@@ -259,6 +263,7 @@ namespace Macro_Recorder
             // 
             // lblMacroInfo
             // 
+            this.lblMacroInfo.AllowDrop = true;
             this.lblMacroInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -271,6 +276,8 @@ namespace Macro_Recorder
             this.lblMacroInfo.Name = "lblMacroInfo";
             this.lblMacroInfo.Size = new System.Drawing.Size(303, 251);
             this.lblMacroInfo.TabIndex = 13;
+            this.lblMacroInfo.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
+            this.lblMacroInfo.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             // 
             // label3
             // 
@@ -281,7 +288,8 @@ namespace Macro_Recorder
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(159, 13);
             this.label3.TabIndex = 14;
-            this.label3.Text = "Copyright © 2022 ThatLukeDev";
+            this.label3.Text = "Copyright © 2023 ThatLukeDev";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // panel1
             // 
@@ -310,8 +318,14 @@ namespace Macro_Recorder
             this.settingsPic.TabStop = false;
             this.settingsPic.Click += new System.EventHandler(this.settingsPic_Click);
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.FileName = "New Macro";
+            this.saveFileDialog1.Filter = "Macro files|*.macro|All files|*.*";
+            // 
             // Form1
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
@@ -331,10 +345,13 @@ namespace Macro_Recorder
             this.Controls.Add(this.txtTypeInfo);
             this.Controls.Add(this.cboType);
             this.Controls.Add(this.button1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Macro Recorder";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.settingsPic)).EndInit();
@@ -364,6 +381,7 @@ namespace Macro_Recorder
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox settingsPic;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

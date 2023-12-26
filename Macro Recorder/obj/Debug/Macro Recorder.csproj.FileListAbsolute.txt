@@ -12,7 +12,6 @@ C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\bin\Debug
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\bin\Debug\Macro Recorder.exe
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\bin\Debug\Macro Recorder.pdb
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\obj\Debug\Macro Recorder.csproj.AssemblyReference.cache
-C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\obj\Debug\Macro Recorder.csproj.SuggestedBindingRedirects.cache
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\obj\Debug\Macro_Recorder.Form1.resources
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\obj\Debug\Macro_Recorder.Properties.Resources.resources
 C:\Users\luke\OneDrive\#Creative\scripts\Macro_Recorder\Macro Recorder\obj\Debug\Macro Recorder.csproj.GenerateResource.cache

@@ -28,6 +28,8 @@ namespace Macro_Recorder
             }
         }
 
+        public char lastKeyDown = (char)0;
+
         Form Form2 = new Form2();
         bool active = false;
         KeyboardHook hook = new KeyboardHook();
@@ -66,6 +68,11 @@ namespace Macro_Recorder
         }
         void start_hotkey(object sender, KeyPressedEventArgs e)
         {
+            if (active)
+            {
+                active = false;
+                return;
+            }
             btnStart_Click(btnStart, null);
         }
 
@@ -91,6 +98,8 @@ namespace Macro_Recorder
 
         private async void button1_ClickAsync(object sender, EventArgs e)
         {
+            this.Opacity = 0.5;
+
             button1.Text = "5";
             await Task.Delay(1000);
             button1.Text = "4";
@@ -108,16 +117,17 @@ namespace Macro_Recorder
             await Task.Delay(1000);
             button1.Text = "Get Cursor Position";
 
+            this.Opacity = 1.0;
         }
 
-        void MClick()
+        async void MClick()
         {
             uint X = (uint)Cursor.Position.X;
             uint Y = (uint)Cursor.Position.Y;
             mouse_event(MOUSEEVENTF_LEFTDOWN, X, Y, 0, 0);
             Random rnd = new Random();
             int rndint = rnd.Next(0, 11);
-            Thread.Sleep(20 + rndint);
+            await Task.Delay(20 + rndint);
             mouse_event(MOUSEEVENTF_LEFTUP, X, Y, 0, 0);
         }
 
@@ -128,9 +138,9 @@ namespace Macro_Recorder
             mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, X, Y, 0, 0);
         }
 
-        private void cboType_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cboType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cboType.Text == "Keyboard")
+            if (cboType.Text == "Keyboard" || cboType.Text == "SmoothType")
             {
                 txtTypeInfo.Text = "Type text here";
             }
@@ -145,19 +155,21 @@ namespace Macro_Recorder
                 txtTypeInfo.Text = "";
             }
             else
-            if (cboType.Text == "Move")
+            if (cboType.Text == "Move" || cboType.Text == "SmoothMove")
             {
-                txtTypeInfo.Text = "Insert Position Here";
-            }
-            else
-            if (cboType.Text == "SmoothMove")
-            {
-                txtTypeInfo.Text = "Insert position here";
-            }
-            else
-            if (cboType.Text == "SmoothMove")
-            {
-                txtTypeInfo.Text = "Type text here";
+                this.Opacity = 0.5;
+
+                txtTypeInfo.Text = "Getting position in 3";
+                await Task.Delay(1000);
+                txtTypeInfo.Text = "Getting position in 2";
+                await Task.Delay(1000);
+                txtTypeInfo.Text = "Getting position in 1";
+                await Task.Delay(1000);
+
+                var pos = Cursor.Position;
+                txtTypeInfo.Text = Convert.ToString(pos);
+
+                this.Opacity = 1.0;
             }
             else
             if (cboType.Text == "KeyDown")
@@ -167,14 +179,27 @@ namespace Macro_Recorder
             else
             if (cboType.Text == "KeyUp")
             {
-                txtTypeInfo.Text = "Insert Character here";
+                if (lastKeyDown != (char)0)
+                {
+                    txtTypeInfo.Text = lastKeyDown.ToString();
+                    lastKeyDown = (char)0;
+                }
+                else
+                {
+                    txtTypeInfo.Text = "Insert Character here";
+                }
             }
+            txtTypeInfo.Focus();
         }
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             string tblInfo = lblMacroInfo.Text + cboType.Text + ":" + txtTypeInfo.Text + ";\n";
             lblMacroInfo.Text = tblInfo;
+            if (cboType.Text == "KeyDown")
+            {
+                lastKeyDown = txtTypeInfo.Text[0];
+            }
         }
 
         private void btnUndo_Click(object sender, EventArgs e)
@@ -212,7 +237,7 @@ namespace Macro_Recorder
                 }
                 for (int repeatvar = 0; repeatvar < ceil; repeatvar++)
                 {
-                    if (active)
+                    if (active || true)
                     {
                         await Task.Delay(Int32.Parse(txtDelayBTW.Text)); //pause
                         var cs420 = Regex.Replace("{X=0,Y=0}", @"[\{\}a-zA-Z=]", "").Split(',');
@@ -224,9 +249,11 @@ namespace Macro_Recorder
                         //Loop
                         foreach (var tempvar in tblSplitInfo)
                         {
+                            if (Cursor.Position == ccs420)
+                                Close();
                             if (active == false)
                             {
-                                break;
+                                return;
                             }
                             //setup
                             string varInstruction = tempvar.Substring(tempvar.IndexOf(':') + 1);
@@ -268,11 +295,13 @@ namespace Macro_Recorder
                                 int distance = Convert.ToInt32(distancedouble);
                                 for (int i = 0; i < (distance / 5); i++)
                                 {
+                                    if (Cursor.Position == ccs420)
+                                        Close();
                                     if (active == false)
                                     {
-                                        break;
+                                        return;
                                     }
-                                    Thread.Sleep(1);
+                                    await Task.Delay(1);
                                     int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance / 5))));
                                     int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance / 5))));
                                     Cursor.Position = new Point(tvx, tvy);
@@ -287,11 +316,11 @@ namespace Macro_Recorder
                                 {
                                     if (active == false)
                                     {
-                                        break;
+                                        return;
                                     }
                                     Random rnd = new Random();
                                     int rndint = rnd.Next(0, 51);
-                                    Thread.Sleep(50 + rndint);
+                                    await Task.Delay(50 + rndint);
                                     if (v != '{' && tempstb)
                                     {
                                         SendKeys.Send(v.ToString());
@@ -343,8 +372,8 @@ namespace Macro_Recorder
         private void btnExport_Click(object sender, EventArgs e)
         {
             //export
-            folderBrowserDialog1.ShowDialog();
-            File.WriteAllText(folderBrowserDialog1.SelectedPath + @"\New Macro.macro", lblMacroInfo.Text);
+            saveFileDialog1.ShowDialog();
+            File.WriteAllText(saveFileDialog1.FileName, lblMacroInfo.Text);
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -365,6 +394,39 @@ namespace Macro_Recorder
             {
                 Form2.Show();
             }
+        }
+
+        private void txtTpeInfo_Click(object sender, EventArgs e)
+        {
+            txtTypeInfo.SelectAll();
+        }
+
+        private void txtTypeInfo_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSubmit_Click(this, e);
+                cboType.Focus();
+            }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_DragDrop(object sender, DragEventArgs e)
+        {
+            string filename = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+            lblMacroInfo.Text = File.ReadAllText(filename);
+        }
+
+        private void Form1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
         }
     }
 
