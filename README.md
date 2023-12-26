@@ -7,10 +7,10 @@
 
 - To install this app, download the [installer](https://github.com/ThatLukeDev/macro-recorder/raw/main/Macro%20Recorder%20Setup/Release/Macro%20Recorder%20Setup.msi) and run it.
 - Once opened, click the drop down box next to `Type`
-    - `Keyboard` and `SmoothType` both use text input in the `Type text here` box. Any special characters can be added using the [SendKeys API](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?view=windowsdesktop-8.0).
-    - `KeyUp` and `KeyDown` both use character input in the `Insert Character here` box.
+    - `Keyboard` and `SmoothType` both use text input in the `Type text here` box. Any special characters can be added using the [SendKeys API](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?view=windowsdesktop-8.0), typically not working in games.
+    - `KeyUp` and `KeyDown` both use character input in the `Insert Character here` box, typically working in games.
     - `LeftClick` and `RightClick` take no input.
-    - `Move` and `SmoothMove` take input in the form `{X=\d+,Y=\d+}`, pressing the `Get Cursor Position` button will paste the position of your cursors position in 5 seconds into the `Insert position here` box.
+    - `Move` and `SmoothMove` take input in the form `{X=\d+,Y=\d+}`, after selecting these, the window will become transparent for 3 seconds before automatically inputting your cursor's position.
     - `Wait` uses a number input in milliseconds as a delay in the `Type milliseconds here` box.
 - Pressing `Submit` will input the 'raw' data into the main textbox on the right, this can be edited.
 - The `Delay` box takes a delay between each repetition in milliseconds.
