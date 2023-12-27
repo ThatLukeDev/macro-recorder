@@ -15,5 +15,6 @@
 - Pressing `Submit` will input the 'raw' data into the main textbox on the right, this can be edited.
 - The `Delay` box takes a delay between each repetition in milliseconds.
 - The `Repeat` box takes an integer, which is the amount of times the program will execute. `inf` is a special case, that will execute forever.
+- For easy use, just press `CTRL + F5` to start/stop recording (use the hotkey to avoid an infinite loop).
 - Finally, pressing `Start / Stop` or pressing `CTRL + F6` will toggle the program on or off.
 - In case of emergency, moving your mouse to the top left of the screen will close the program between repetitions (thank me later)

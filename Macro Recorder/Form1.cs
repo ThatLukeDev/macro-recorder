@@ -15,6 +15,7 @@ using Macro_Recorder.Properties;
 using WindowsInput;
 using WindowsInput.Native;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace Macro_Recorder
 {
@@ -24,15 +25,21 @@ namespace Macro_Recorder
         {
             if (eventArgs)
             {
-                MessageBox.Show("failure");
+                MessageBox.Show("failure, have fun escaping settings");
             }
         }
 
-        public char lastKeyDown = (char)0;
+        public string lastKeyDown = "";
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
         Form Form2 = new Form2();
         bool active = false;
-        KeyboardHook hook = new KeyboardHook();
+        bool recording = false;
+        KeyboardHook hookStart = new KeyboardHook();
+        KeyboardHook hookRecord = new KeyboardHook();
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
 
@@ -40,6 +47,34 @@ namespace Macro_Recorder
         private const int MOUSEEVENTF_LEFTUP = 0x04;
         private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
         private const int MOUSEEVENTF_RIGHTUP = 0x10;
+
+        static string processName = Process.GetCurrentProcess().MainModule.ModuleName;
+        //
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWindowsHookEx(int idHook, HookCallbackDelegate lpfn, IntPtr wParam, uint lParam);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+        [DllImport("user32.dll")]
+        public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        private static int WH_KEYBOARD_LL = 13;
+        private static int WH_MOUSE_LL = 14;
+        private static int WM_KEYDOWN = 0x0100;
+        private static int WM_KEYUP = 0x0101;
+        private static int WM_ALTKEYDOWN = 0x0104;
+        private static int WM_ALTKEYUP = 0x0105;
+        private static int WM_MOUSEMOVE = 0x0200;
+        private static int WM_LBUTTONDOWN = 0x0201;
+        private static int WM_LBUTTONUP = 0x0202;
+        private static int WM_MOUSEWHEEL = 0x020A;
+        private static int WM_RBUTTONDOWN = 0x0204;
+        private static int WM_RBUTTONUP = 0x0205;
+        private static int WM_LBUTTONDBLCLK = 0x0203;
+        private static int WM_MBUTTONDOWN = 0x0207;
+        private static int WM_MBUTTONUP = 0x020;
+
+        public delegate IntPtr HookCallbackDelegate(int nCode, IntPtr wParam, IntPtr lParam);
+
         public class Keyboard
         {
             [DllImport("user32.dll", SetLastError = true)]
@@ -59,12 +94,110 @@ namespace Macro_Recorder
                 keycord.Keyboard.KeyUp((VirtualKeyCode)key);
             }
         }
+        public struct Vector2
+        {
+            public int x;
+            public int y;
+        }
+
+        public struct MOUSEINFO
+        {
+            public Vector2 pos;
+            public uint data;
+            public uint flags;
+            public uint time;
+            public IntPtr extra;
+        }
+
+        public class LoggerC
+        {
+            HookCallbackDelegate hcDelegate;
+            HookCallbackDelegate mhcDelegate;
+            IntPtr whllkeyboardhook;
+            IntPtr whllmousehook;
+            string macroLogged = "";
+
+            Stopwatch elapsed = new Stopwatch();
+            Stopwatch mtimer = new Stopwatch();
+
+            IntPtr handler(int nCode, IntPtr wParam, IntPtr lParam)
+            {
+                if (nCode >= 0)
+                {
+                    macroLogged += $"Wait:{elapsed.ElapsedMilliseconds};";
+                    elapsed.Restart();
+
+                    Keys key = (Keys)Marshal.ReadInt32(lParam);
+                    if (key != Keys.F5)
+                    {
+                        if (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_ALTKEYDOWN)
+                            macroLogged += $"KeyDown:{key};";
+                        if (wParam == (IntPtr)WM_KEYUP || wParam == (IntPtr)WM_ALTKEYUP)
+                            macroLogged += $"KeyUp:{key};";
+                    }
+                }
+                return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+            }
+            IntPtr mhandler(int nCode, IntPtr wParam, IntPtr lParam)
+            {
+                if (nCode >= 0 && mtimer.ElapsedMilliseconds > 10)
+                {
+                    macroLogged += $"Wait:{elapsed.ElapsedMilliseconds};";
+                    elapsed.Restart();
+
+                    MOUSEINFO info = (MOUSEINFO)Marshal.PtrToStructure(lParam, typeof(MOUSEINFO));
+                    if (wParam == (IntPtr)WM_MOUSEMOVE)
+                    {
+                        if (mtimer.ElapsedMilliseconds < 50)
+                        {
+                            macroLogged += $"Move:{{X={info.pos.x},Y={info.pos.y}}};";
+                        }
+                        else
+                        {
+                            macroLogged += $"SmoothMove:{{X={info.pos.x},Y={info.pos.y}}};";
+                        }
+                    }
+                    mtimer.Restart();
+                    if (wParam == (IntPtr)WM_LBUTTONUP)
+                        macroLogged += "LeftClick:;";
+                    if (wParam == (IntPtr)WM_RBUTTONUP)
+                        macroLogged += "RightClick:;";
+                }
+                return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+            }
+
+            public void start()
+            {
+                mtimer.Start();
+                elapsed.Start();
+
+                macroLogged = "";
+                hcDelegate = handler;
+                mhcDelegate = mhandler;
+
+                string mainModuleName = Process.GetCurrentProcess().MainModule.ModuleName;
+                whllkeyboardhook = SetWindowsHookEx(WH_KEYBOARD_LL, hcDelegate, GetModuleHandle(mainModuleName), 0);
+                whllmousehook = SetWindowsHookEx(WH_MOUSE_LL, mhcDelegate, GetModuleHandle(mainModuleName), 0);
+            }
+            public string end()
+            {
+                UnhookWindowsHookEx(whllkeyboardhook);
+                UnhookWindowsHookEx(whllmousehook);
+                hcDelegate = null;
+                mhcDelegate = null;
+                elapsed.Stop();
+                return macroLogged;
+            }
+        }
+        LoggerC Logger = new LoggerC();
 
         public Form1()
         {
             InitializeComponent();
-            hook.KeyPressed += new EventHandler<KeyPressedEventArgs>(start_hotkey);
-            hook.RegisterHotKey(Macro_Recorder.ModifierKeys.Control, Keys.F6);
+            hookStart.KeyPressed += new EventHandler<KeyPressedEventArgs>(start_hotkey);
+            hookStart.RegisterHotKey(Macro_Recorder.ModifierKeys.Control, Keys.F6);
+            hookRecord.KeyPressed += new EventHandler<KeyPressedEventArgs>(record_hotkey);
+            hookRecord.RegisterHotKey(Macro_Recorder.ModifierKeys.Control, Keys.F5);
         }
         void start_hotkey(object sender, KeyPressedEventArgs e)
         {
@@ -74,6 +207,10 @@ namespace Macro_Recorder
                 return;
             }
             btnStart_Click(btnStart, null);
+        }
+        void record_hotkey(object sender, KeyPressedEventArgs e)
+        {
+            button1_ClickAsync(button1, null);
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -98,26 +235,17 @@ namespace Macro_Recorder
 
         private async void button1_ClickAsync(object sender, EventArgs e)
         {
-            this.Opacity = 0.5;
-
-            button1.Text = "5";
-            await Task.Delay(1000);
-            button1.Text = "4";
-            await Task.Delay(1000);
-            button1.Text = "3";
-            await Task.Delay(1000);
-            button1.Text = "2";
-            await Task.Delay(1000);
-            button1.Text = "1";
-            await Task.Delay(1000);
-
-            var pos = Cursor.Position;
-            button1.Text = Convert.ToString(pos);
-            txtTypeInfo.Text = Convert.ToString(pos);
-            await Task.Delay(1000);
-            button1.Text = "Get Cursor Position";
-
-            this.Opacity = 1.0;
+            if (recording)
+            {
+                lblMacroInfo.Text += Logger.end();
+                button1.Text = "Start Recording\r\n(CTRL + F5)";
+            }
+            else
+            {
+                Logger.start();
+                button1.Text = "Stop Recording\r\n(CTRL + F5)";
+            }
+            recording = !recording;
         }
 
         async void MClick()
@@ -131,11 +259,15 @@ namespace Macro_Recorder
             mouse_event(MOUSEEVENTF_LEFTUP, X, Y, 0, 0);
         }
 
-        void MClickR()
+        async void MClickR()
         {
             uint X = (uint)Cursor.Position.X;
             uint Y = (uint)Cursor.Position.Y;
-            mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, X, Y, 0, 0);
+            mouse_event(MOUSEEVENTF_RIGHTDOWN, X, Y, 0, 0);
+            Random rnd = new Random();
+            int rndint = rnd.Next(0, 11);
+            await Task.Delay(20 + rndint);
+            mouse_event(MOUSEEVENTF_RIGHTUP, X, Y, 0, 0);
         }
 
         private async void cboType_SelectedIndexChanged(object sender, EventArgs e)
@@ -179,10 +311,10 @@ namespace Macro_Recorder
             else
             if (cboType.Text == "KeyUp")
             {
-                if (lastKeyDown != (char)0)
+                if (lastKeyDown != "")
                 {
                     txtTypeInfo.Text = lastKeyDown.ToString();
-                    lastKeyDown = (char)0;
+                    lastKeyDown = "";
                 }
                 else
                 {
@@ -198,7 +330,7 @@ namespace Macro_Recorder
             lblMacroInfo.Text = tblInfo;
             if (cboType.Text == "KeyDown")
             {
-                lastKeyDown = txtTypeInfo.Text[0];
+                lastKeyDown = txtTypeInfo.Text;
             }
         }
 
