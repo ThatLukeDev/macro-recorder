@@ -48,12 +48,12 @@ namespace Macro_Recorder
             const int KEY_DOWN_EVENT = 0x0001;
             const int KEY_UP_EVENT = 0x0002;
 
-            public static void KeyDown(byte key)
+            public static void KeyDown(Keys key)
             {
                 InputSimulator keycord = new InputSimulator();
                 keycord.Keyboard.KeyDown((VirtualKeyCode)key);
             }
-            public static void KeyUp(byte key)
+            public static void KeyUp(Keys key)
             {
                 InputSimulator keycord = new InputSimulator();
                 keycord.Keyboard.KeyUp((VirtualKeyCode)key);
@@ -349,12 +349,12 @@ namespace Macro_Recorder
                             // KeyDown
                             if (varInstructionType.Contains("KeyDown"))
                             {
-                                Keyboard.KeyDown((byte)(Keys)Enum.Parse(typeof(Keys), varInstruction, true));
+                                Keyboard.KeyDown((Keys)Enum.Parse(typeof(Keys), varInstruction, true));
                             }
                             // KeyUp
                             if (varInstructionType.Contains("KeyUp"))
                             {
-                                Keyboard.KeyUp((byte)(Keys)Enum.Parse(typeof(Keys), varInstruction, true));
+                                Keyboard.KeyUp((Keys)Enum.Parse(typeof(Keys), varInstruction, true));
                             }
                         }
                     }
