@@ -187,7 +187,7 @@ namespace Macro_Recorder
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.Filter = "Macro files|*.macro|All files|*.*";
+            this.openFileDialog1.Filter = "All files|*.*|Macro files|*.mac|Raw Macro files|*.macro";
             this.openFileDialog1.Title = "Select macro file";
             // 
             // btnImport
@@ -321,7 +321,7 @@ namespace Macro_Recorder
             // saveFileDialog1
             // 
             this.saveFileDialog1.FileName = "New Macro";
-            this.saveFileDialog1.Filter = "Macro files|*.macro|All files|*.*";
+            this.saveFileDialog1.Filter = "Macro files|*.mac|Raw Macro files|*.macro|All files|*.*";
             // 
             // Form1
             // 

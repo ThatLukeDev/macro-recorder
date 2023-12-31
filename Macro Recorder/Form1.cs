@@ -16,6 +16,7 @@ using WindowsInput;
 using WindowsInput.Native;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.IO.Compression;
 
 namespace Macro_Recorder
 {
@@ -498,14 +499,46 @@ namespace Macro_Recorder
         {
             //import
             openFileDialog1.ShowDialog();
-            lblMacroInfo.Text = File.ReadAllText(openFileDialog1.FileName);
+            if (openFileDialog1.FileName.Length == 0)
+                return;
+            switch (openFileDialog1.FileName.Substring(openFileDialog1.FileName.Length - 4))
+            {
+                case ".mac":
+                    MemoryStream output = new MemoryStream();
+                    FileStream input = new FileStream(openFileDialog1.FileName, FileMode.Open);
+                    GZipStream compressor = new GZipStream(input, CompressionMode.Decompress);
+                    {
+                        compressor.CopyTo(output);
+                        compressor.Close();
+                    }
+                    input.Close();
+                    lblMacroInfo.Text = new string(output.ToArray().Select((x) => (char)x).ToArray());
+                    break;
+                default:
+                    lblMacroInfo.Text = File.ReadAllText(openFileDialog1.FileName);
+                    break;
+            }
         }
 
         private void btnExport_Click(object sender, EventArgs e)
         {
             //export
             saveFileDialog1.ShowDialog();
-            File.WriteAllText(saveFileDialog1.FileName, lblMacroInfo.Text);
+            switch (saveFileDialog1.FileName.Substring(saveFileDialog1.FileName.Length - 4))
+            {
+                case ".mac":
+                    FileStream compressed = File.Create(saveFileDialog1.FileName);
+                    GZipStream compressor = new GZipStream(compressed, CompressionMode.Compress);
+                    {
+                        compressor.Write(lblMacroInfo.Text.ToCharArray().Select(c => (byte)c).ToArray(), 0, lblMacroInfo.Text.Length);
+                        compressor.Close();
+                    }
+                    compressed.Close();
+                    break;
+                default:
+                    File.WriteAllText(saveFileDialog1.FileName, lblMacroInfo.Text);
+                    break;
+            }
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
