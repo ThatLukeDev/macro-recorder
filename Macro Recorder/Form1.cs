@@ -241,7 +241,7 @@ namespace Macro_Recorder
         {
             if (recording)
             {
-                lblMacroInfo.Text += Logger.end();
+                lblMacroInfo.Text += Logger.end() + "KeyUp:LControlKey;";
                 button1.Text = "Start Recording\r\n(CTRL + F5)";
             }
             else
@@ -624,8 +624,26 @@ namespace Macro_Recorder
         private void Form1_DragDrop(object sender, DragEventArgs e)
         {
             string filename = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
-            lblMacroInfo.Text = File.ReadAllText(filename);
-        }
+                if (filename.Length == 0)
+                    return;
+                switch (filename.Substring(filename.Length - 4))
+                {
+                    case ".mac":
+                        MemoryStream output = new MemoryStream();
+                        FileStream input = new FileStream(filename, FileMode.Open);
+                        GZipStream compressor = new GZipStream(input, CompressionMode.Decompress);
+                        {
+                            compressor.CopyTo(output);
+                            compressor.Close();
+                        }
+                        input.Close();
+                        lblMacroInfo.Text = new string(output.ToArray().Select((x) => (char)x).ToArray());
+                        break;
+                    default:
+                        lblMacroInfo.Text = File.ReadAllText(filename);
+                        break;
+                }
+            }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
         {
