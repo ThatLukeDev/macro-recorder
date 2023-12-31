@@ -69,5 +69,28 @@ namespace Macro_Recorder.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Runtime.InteropServices;
+        ///using System.Text.RegularExpressions;
+        ///using System.Threading;
+        ///using System.Windows.Forms;
+        ///using System.Drawing;
+        ///
+        ///namespace ConsoleApp2
+        ///{
+        ///    public class Program
+        ///    {
+        ///        [DllImport(&quot;user32.dll&quot;, SetLastError = true)]
+        ///        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+        ///        [DllImport(&quot;user32.dll&quot;, SetLastError = true)]
+        ///        static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string standalone_executor {
+            get {
+                return ResourceManager.GetString("standalone_executor", resourceCulture);
+            }
+        }
     }
 }

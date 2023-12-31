@@ -1,0 +1,154 @@
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
+using System.Drawing;
+
+namespace ConsoleApp2
+{
+    public class Program
+    {
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
+
+        [DllImport("Kernel32.dll", CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        private static extern IntPtr GetConsoleWindow();
+        [DllImport("User32.dll", CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ShowWindow([In] IntPtr hWnd, [In] Int32 nCmdShow);
+        private static void MinimizeConsoleWindow()
+        {
+            IntPtr hWndConsole = GetConsoleWindow();
+            ShowWindow(hWndConsole, 6);
+        }
+
+        static void Main(string[] args)
+        {
+            MinimizeConsoleWindow();
+            KeysConverter kc = new KeysConverter();
+            string macro = "_REPLACEVAR-MACROCONTENT_";
+            string[] instructions = macro.Split(';');
+            Thread.Sleep(100);
+            MinimizeConsoleWindow();
+            foreach (string parts in instructions)
+            {
+                string instruction = parts.Split(':')[0];
+                if (instruction == "") return;
+                string body = parts.Split(':')[1];
+                switch (instruction)
+                {
+                    case "Wait":
+                        {
+                            Thread.Sleep(Convert.ToInt32(body));
+                        }
+                        break;
+                    case "Keyboard":
+                        {
+                            SendKeys.SendWait(body);
+                        }
+                        break;
+                    case "SmoothType":
+                        {
+                            string tempst = "";
+                            bool tempstb = true;
+                            foreach (char v in body)
+                            {
+                                Random rnd = new Random();
+                                int rndint = rnd.Next(0, 51);
+                                Thread.Sleep(50 + rndint);
+                                if (v != '{' && tempstb)
+                                {
+                                    SendKeys.SendWait(v.ToString());
+                                }
+                                else
+                                {
+                                    tempstb = false;
+                                    if (v == '{')
+                                    {
+                                        tempst = "";
+                                    }
+                                    tempst += v.ToString();
+                                    if (v == '}')
+                                    {
+                                        tempstb = true;
+                                        SendKeys.Send(tempst);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "KeyDown":
+                        {
+                            Keys key = (Keys)kc.ConvertFrom(body);
+                            keybd_event((byte)key, 0x0, 0, 0);
+                        }
+                        break;
+                    case "KeyUp":
+                        {
+                            Keys key = (Keys)kc.ConvertFrom(body);
+                            keybd_event((byte)key, 0x0, 2, 0);
+                        }
+                        break;
+                    case "Move":
+                        {
+                            var clicktype = Regex.Replace(body, @"[\{\}a-zA-Z=]", "").Split(',');
+                            Point pointr = new Point(int.Parse(clicktype[0]), int.Parse(clicktype[1]));
+
+                            Cursor.Position = pointr;
+                        }
+                        break;
+                    case "SmoothMove":
+                        {
+                            int currentx = Cursor.Position.X;
+                            int currenty = Cursor.Position.Y;
+                            var tempxy = Regex.Replace(body, @"[\{\}a-zA-Z=]", "").Split(',');
+                            int destinationx = int.Parse(tempxy[0]);
+                            int destinationy = int.Parse(tempxy[1]);
+                            int distancex = currentx - destinationx;
+                            int distancey = currenty - destinationy;
+                            double distancedouble = Math.Sqrt(Math.Pow(Math.Abs(distancex), 2) + Math.Pow(Math.Abs(distancey), 2));
+                            int distance = Convert.ToInt32(distancedouble);
+                            for (int i = 0; i < (distance / 5); i++)
+                            {
+                                Thread.Sleep(1);
+                                int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance / 5))));
+                                int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance / 5))));
+                                Cursor.Position = new Point(tvx, tvy);
+                            }
+                        }
+                        break;
+                    case "LeftClick":
+                        {
+                            uint X = (uint)Cursor.Position.X;
+                            uint Y = (uint)Cursor.Position.Y;
+                            mouse_event(0x02, X, Y, 0, 0);
+                            Random rnd = new Random();
+                            int rndint = rnd.Next(0, 11);
+                            Thread.Sleep(20 + rndint);
+                            mouse_event(0x04, X, Y, 0, 0);
+                        }
+                        break;
+                    case "RightClick":
+                        {
+                            uint X = (uint)Cursor.Position.X;
+                            uint Y = (uint)Cursor.Position.Y;
+                            mouse_event(0x08, X, Y, 0, 0);
+                            Random rnd = new Random();
+                            int rndint = rnd.Next(0, 11);
+                            Thread.Sleep(20 + rndint);
+                            mouse_event(0x10, X, Y, 0, 0);
+                        }
+                        break;
+                    default:
+                        {
+                            Console.WriteLine(instruction + " does not exist");
+                        }
+                        break;
+                }
+            }
+        }
+    }
+}

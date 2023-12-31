@@ -17,6 +17,9 @@ using WindowsInput.Native;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.CodeDom.Compiler;
+using System.Reflection;
+using System.Resources;
 
 namespace Macro_Recorder
 {
@@ -526,6 +529,44 @@ namespace Macro_Recorder
             saveFileDialog1.ShowDialog();
             switch (saveFileDialog1.FileName.Substring(saveFileDialog1.FileName.Length - 4))
             {
+                case ".exe":
+                    {
+                        string csSource = Resources.standalone_executor.ToString();
+                        string csRep = lblMacroInfo.Text;
+                        csRep = csRep.Replace("\r", "");
+                        csRep = csRep.Replace("\n", "");
+                        csSource = csSource.Replace("_REPLACEVAR-MACROCONTENT_", csRep);
+                        File.WriteAllText(saveFileDialog1.FileName.Substring(0, saveFileDialog1.FileName.Length - 4) + ".cs", csSource);
+
+                        CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+                        CompilerParameters param = new CompilerParameters();
+
+                        param.ReferencedAssemblies.Add("System.dll");
+                        param.ReferencedAssemblies.Add("System.Windows.dll");
+                        param.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+                        param.ReferencedAssemblies.Add("System.Drawing.dll");
+                        param.ReferencedAssemblies.Add("System.Text.RegularExpressions.dll");
+
+                        param.GenerateExecutable = true;
+                        param.OutputAssembly = saveFileDialog1.FileName;
+                        param.GenerateInMemory = false;
+                        param.TreatWarningsAsErrors = false;
+
+                        CompilerResults result = provider.CompileAssemblyFromFile(param, saveFileDialog1.FileName.Substring(0, saveFileDialog1.FileName.Length - 4) + ".cs");
+
+                        if (result.Errors.Count > 0)
+                        {
+                            foreach (CompilerError error in result.Errors)
+                            {
+                                MessageBox.Show(error.ErrorText, $"Error during exe compilation: line {error.Line}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            File.Delete(saveFileDialog1.FileName.Substring(0, saveFileDialog1.FileName.Length - 4) + ".cs");
+                        }
+                    }
+                    break;
                 case ".mac":
                     FileStream compressed = File.Create(saveFileDialog1.FileName);
                     GZipStream compressor = new GZipStream(compressed, CompressionMode.Compress);

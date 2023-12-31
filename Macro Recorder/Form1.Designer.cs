@@ -187,7 +187,8 @@ namespace Macro_Recorder
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.Filter = "All files|*.*|Macro files|*.mac|Raw Macro files|*.macro";
+            this.openFileDialog1.Filter = "Supported files|*.mac;*.macro|Macro files|*.mac|Raw Macro files|*.macro|All files" +
+    "|*.*";
             this.openFileDialog1.Title = "Select macro file";
             // 
             // btnImport
@@ -274,6 +275,7 @@ namespace Macro_Recorder
             this.lblMacroInfo.Margin = new System.Windows.Forms.Padding(2);
             this.lblMacroInfo.Multiline = true;
             this.lblMacroInfo.Name = "lblMacroInfo";
+            this.lblMacroInfo.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.lblMacroInfo.Size = new System.Drawing.Size(303, 251);
             this.lblMacroInfo.TabIndex = 13;
             this.lblMacroInfo.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
@@ -321,7 +323,7 @@ namespace Macro_Recorder
             // saveFileDialog1
             // 
             this.saveFileDialog1.FileName = "New Macro";
-            this.saveFileDialog1.Filter = "Macro files|*.mac|Raw Macro files|*.macro|All files|*.*";
+            this.saveFileDialog1.Filter = "Macro files|*.mac|Raw Macro files|*.macro|Executable files|*.exe|All files|*.*";
             // 
             // Form1
             // 
