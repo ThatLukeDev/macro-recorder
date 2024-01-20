@@ -19,4 +19,11 @@
 - The `Import` button (or dragging and dropping into the window) imports the macro (exe files not supported for import).
 - For easy use, just press `CTRL + F5` to start/stop recording (use the hotkey to avoid an infinite loop).
 - Finally, pressing `Start / Stop` or pressing `CTRL + F6` will toggle the program on or off.
-- In case of emergency, moving your mouse to the top left of the screen will close the program between repetitions (thank me later)
+- In case of emergency, moving your mouse to the top left of the screen will close the program between repetitions (thank me later).
+---
+### Configuration
+![settings window](https://github.com/ThatLukeDev/macro-recorder/assets/76230394/9d1691b5-ca7e-401b-8ed1-8def76d2b772)
+
+*Configuration is accessed through the cog icon on the main window.*
+- Playback speed can be changed with the `Speed` box.
+- Mouse boundries can be changed with the `Mouse offset` boxes.
