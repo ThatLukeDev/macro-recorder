@@ -23,7 +23,32 @@ namespace Macro_Recorder
 
         private void lightMode_CheckedChanged(object sender, EventArgs e)
         {
-            Form1.lightMode(lightMode.Checked);
+            if (lightMode.Checked)
+                MessageBox.Show("No");
+            lightMode.Checked = false;
+        }
+
+        private void Form2_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
+
+        private void speed_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                speedLabel.Text = "Speed: " + double.Parse(speed.Text).ToString() + "x";
+            }
+            catch
+            {
+                speedLabel.Text = "";
+            }
+        }
+
+        private void speedBar_Scroll(object sender, EventArgs e)
+        {
+            speed.Text = (double.Parse(speedBar.Value.ToString()) / 2).ToString();
         }
     }
 }

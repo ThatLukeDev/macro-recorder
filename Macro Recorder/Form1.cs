@@ -25,21 +25,13 @@ namespace Macro_Recorder
 {
     public partial class Form1 : Form
     {
-        public static void lightMode(bool eventArgs)
-        {
-            if (eventArgs)
-            {
-                MessageBox.Show("failure, have fun escaping settings");
-            }
-        }
-
         public string lastKeyDown = "";
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-        Form Form2 = new Form2();
+        
+        Form config = new Form2();
         bool active = false;
         bool recording = false;
         KeyboardHook hookStart = new KeyboardHook();
@@ -203,6 +195,17 @@ namespace Macro_Recorder
             hookRecord.KeyPressed += new EventHandler<KeyPressedEventArgs>(record_hotkey);
             hookRecord.RegisterHotKey(Macro_Recorder.ModifierKeys.Control, Keys.F5);
         }
+
+        double getSpeed()
+        {
+            return config.Controls["speedLabel"].Text == "" ? 1.0d : double.Parse(config.Controls["speed"].Text);
+        }
+
+        int adjustSpeed(int ms)
+        {
+            return Convert.ToInt32(Convert.ToDouble(ms) / getSpeed());
+        }
+
         void start_hotkey(object sender, KeyPressedEventArgs e)
         {
             if (active)
@@ -259,7 +262,7 @@ namespace Macro_Recorder
             mouse_event(MOUSEEVENTF_LEFTDOWN, X, Y, 0, 0);
             Random rnd = new Random();
             int rndint = rnd.Next(0, 11);
-            await Task.Delay(20 + rndint);
+            await Task.Delay(adjustSpeed(20 + rndint));
             mouse_event(MOUSEEVENTF_LEFTUP, X, Y, 0, 0);
         }
 
@@ -270,7 +273,7 @@ namespace Macro_Recorder
             mouse_event(MOUSEEVENTF_RIGHTDOWN, X, Y, 0, 0);
             Random rnd = new Random();
             int rndint = rnd.Next(0, 11);
-            await Task.Delay(20 + rndint);
+            await Task.Delay(adjustSpeed(20 + rndint));
             mouse_event(MOUSEEVENTF_RIGHTUP, X, Y, 0, 0);
         }
 
@@ -375,7 +378,7 @@ namespace Macro_Recorder
                 {
                     if (active || true)
                     {
-                        await Task.Delay(Int32.Parse(txtDelayBTW.Text)); //pause
+                        await Task.Delay(adjustSpeed(Int32.Parse(txtDelayBTW.Text))); //pause
                         var cs420 = Regex.Replace("{X=0,Y=0}", @"[\{\}a-zA-Z=]", "").Split(',');
                         Point ccs420 = new Point(int.Parse(cs420[0]), int.Parse(cs420[1]));
                         if (Cursor.Position == ccs420)
@@ -428,8 +431,8 @@ namespace Macro_Recorder
                                 int distancex = currentx - destinationx;
                                 int distancey = currenty - destinationy;
                                 double distancedouble = Math.Sqrt(Math.Pow(Math.Abs(distancex), 2) + Math.Pow(Math.Abs(distancey), 2));
-                                int distance = Convert.ToInt32(distancedouble);
-                                for (int i = 0; i < (distance / 5); i++)
+                                int distance = adjustSpeed(Convert.ToInt32(distancedouble));
+                                for (int i = 0; i < (distance * 0.1); i++)
                                 {
                                     if (Cursor.Position == ccs420)
                                         Close();
@@ -438,8 +441,8 @@ namespace Macro_Recorder
                                         return;
                                     }
                                     await Task.Delay(1);
-                                    int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance / 5))));
-                                    int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance / 5))));
+                                    int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance * 0.1))));
+                                    int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance * 0.1))));
                                     Cursor.Position = new Point(tvx, tvy);
                                 }
                             }
@@ -456,7 +459,7 @@ namespace Macro_Recorder
                                     }
                                     Random rnd = new Random();
                                     int rndint = rnd.Next(0, 51);
-                                    await Task.Delay(50 + rndint);
+                                    await Task.Delay(adjustSpeed(50 + rndint));
                                     if (v != '{' && tempstb)
                                     {
                                         SendKeys.Send(v.ToString());
@@ -480,7 +483,7 @@ namespace Macro_Recorder
                             // Wait
                             if (varInstructionType.Contains("Wait"))
                             {
-                                await Task.Delay(Convert.ToInt32(varInstruction));
+                                await Task.Delay(adjustSpeed(Convert.ToInt32(varInstruction)));
                             }
                             // KeyDown
                             if (varInstructionType.Contains("KeyDown"))
@@ -592,13 +595,13 @@ namespace Macro_Recorder
 
         public void settingsPic_Click(object sender, EventArgs e)
         {
-            if (Form2.Visible)
+            if (config.Visible)
             {
-                Form2.Hide();
+                config.Hide();
             }
             else
             {
-                Form2.Show();
+                config.Show();
             }
         }
 
