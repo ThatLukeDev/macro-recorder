@@ -27,3 +27,7 @@
 *Configuration is accessed through the cog icon on the main window.*
 - Playback speed can be changed with the `Speed` box.
 - Mouse boundries can be changed with the `Mouse offset` boxes.
+
+---
+
+For any issues or feature requests, raise them in the *[github issues](https://github.com/ThatLukeDev/macro-recorder/issues)* tab.
