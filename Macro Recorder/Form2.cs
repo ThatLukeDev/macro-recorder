@@ -39,6 +39,10 @@ namespace Macro_Recorder
             try
             {
                 speedLabel.Text = "Speed: " + double.Parse(speed.Text).ToString() + "x";
+                if (double.Parse(speed.Text) == 0.0d)
+                {
+                    speedLabel.Text = "";
+                }
             }
             catch
             {
@@ -49,6 +53,41 @@ namespace Macro_Recorder
         private void speedBar_Scroll(object sender, EventArgs e)
         {
             speed.Text = (double.Parse(speedBar.Value.ToString()) / 2).ToString();
+        }
+
+        void updateMCtext()
+        {
+            try
+            {
+                moveLabel.Text = "Move offset: ("
+                    + int.Parse(moveX.Text).ToString() + "," + int.Parse(moveY.Text).ToString()
+                    + "*" + double.Parse(scaleX.Text).ToString() + "," + "*" + double.Parse(scaleY.Text).ToString()
+                + ")";
+            }
+            catch
+            {
+                moveLabel.Text = "Move offset: (null)";
+            }
+        }
+
+        private void moveX_TextChanged(object sender, EventArgs e)
+        {
+            updateMCtext();
+        }
+
+        private void moveY_TextChanged(object sender, EventArgs e)
+        {
+            updateMCtext();
+        }
+
+        private void scaleX_TextChanged(object sender, EventArgs e)
+        {
+            updateMCtext();
+        }
+
+        private void scaleY_TextChanged(object sender, EventArgs e)
+        {
+            updateMCtext();
         }
     }
 }

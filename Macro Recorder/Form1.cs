@@ -200,10 +200,34 @@ namespace Macro_Recorder
         {
             return config.Controls["speedLabel"].Text == "" ? 1.0d : double.Parse(config.Controls["speed"].Text);
         }
-
         int adjustSpeed(int ms)
         {
             return Convert.ToInt32(Convert.ToDouble(ms) / getSpeed());
+        }
+
+        int getXoffset()
+        {
+            return config.Controls["moveLabel"].Text == "Move offset: (null)" ? 0 : int.Parse(config.Controls["moveX"].Text);
+        }
+        int getYoffset()
+        {
+            return config.Controls["moveLabel"].Text == "Move offset: (null)" ? 0 : int.Parse(config.Controls["moveY"].Text);
+        }
+        double getXscale()
+        {
+            return config.Controls["moveLabel"].Text == "Move offset: (null)" ? 1.0d : double.Parse(config.Controls["scaleX"].Text);
+        }
+        double getYscale()
+        {
+            return config.Controls["moveLabel"].Text == "Move offset: (null)" ? 1.0d : double.Parse(config.Controls["scaleY"].Text);
+        }
+        int adjustX(int x)
+        {
+            return Convert.ToInt32(x * getXscale()) + getXoffset();
+        }
+        int adjustY(int y)
+        {
+            return Convert.ToInt32(y * getYscale()) + getYoffset();
         }
 
         void start_hotkey(object sender, KeyPressedEventArgs e)
@@ -418,6 +442,9 @@ namespace Macro_Recorder
                                 var clicktype = Regex.Replace(varInstruction, @"[\{\}a-zA-Z=]", "").Split(',');
                                 Point pointr = new Point(int.Parse(clicktype[0]), int.Parse(clicktype[1]));
 
+                                pointr.X = adjustX(pointr.X);
+                                pointr.Y = adjustY(pointr.Y);
+
                                 Cursor.Position = pointr;
                             }
                             // SmoothMove
@@ -426,6 +453,10 @@ namespace Macro_Recorder
                                 int currentx = Cursor.Position.X;
                                 int currenty = Cursor.Position.Y;
                                 var tempxy = Regex.Replace(varInstruction, @"[\{\}a-zA-Z=]", "").Split(',');
+
+                                tempxy[0] = adjustX(int.Parse(tempxy[0])).ToString();
+                                tempxy[1] = adjustY(int.Parse(tempxy[1])).ToString();
+
                                 int destinationx = int.Parse(tempxy[0]);
                                 int destinationy = int.Parse(tempxy[1]);
                                 int distancex = currentx - destinationx;
