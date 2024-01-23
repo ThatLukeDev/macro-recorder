@@ -30,7 +30,7 @@
 
 ---
 
-For inquiries on why the program is flagged as a virus by Windows, this is a false flag. The [virustotal](https://www.virustotal.com/gui/file/5bf71436a50bee20ab678081421a8667233c05c294acdf4f42ad16ef807f4a58) scan is available, showing safe.
+For inquiries on why the program is flagged as a virus by Windows, this is a false flag. The [virustotal](https://www.virustotal.com/gui/file/5bf71436a50bee20ab678081421a8667233c05c294acdf4f42ad16ef807f4a58) scan is available, showing safe. The [source code](https://github.com/ThatLukeDev/macro-recorder) is also available for you to read and compile yourself.
 
 Even verified macro recorders such as [TinyTask](https://tinytask.net/) get flagged by [virustotal](https://www.virustotal.com/gui/file/75e06ac5b7c1adb01ab994633466685e3dcef31d635eba1734fe16c7893ffe12), but are not flagged by windows as they have paid for a [certificate](https://en.wikipedia.org/wiki/Extended_Validation_Certificate) (this is what the blue unrecognised app screen means).
 
