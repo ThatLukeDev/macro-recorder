@@ -5,7 +5,7 @@
 
 ---
 
-- To install this app, download the [installer](https://github.com/ThatLukeDev/macro-recorder/raw/main/Macro%20Recorder%20Setup/Release/Macro%20Recorder%20Setup.msi) and run it.
+- To install this app, download the [installer](https://github.com/ThatLukeDev/macro-recorder/releases/download/1.0.2/Macro.Recorder.Setup.msi) and run it.
 - Once opened, click the drop down box next to `Type`
     - `Keyboard` and `SmoothType` both use text input in the `Type text here` box. Any special characters can be added using the [SendKeys API](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.sendkeys?view=windowsdesktop-8.0), typically not working in games.
     - `KeyUp` and `KeyDown` both use character input in the `Insert Character here` box. Any special characters can be added using the [Forms Keys Enum](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-8.0) (with support for more keys), typically working in games.
@@ -27,6 +27,12 @@
 *Configuration is accessed through the cog icon on the main window.*
 - Playback speed can be changed with the `Speed` box.
 - Mouse boundries can be changed with the `Mouse offset` boxes.
+
+---
+
+For inquiries on why the program is flagged as a virus by Windows, the [virustotal](https://www.virustotal.com/gui/file/5bf71436a50bee20ab678081421a8667233c05c294acdf4f42ad16ef807f4a58) scan is available, showing safe, and you can [whitelist](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26) the program:
+
+`Windows Defender` > `Protection History` > `Threat Blocked` > `Actions` > `Allow`
 
 ---
 
