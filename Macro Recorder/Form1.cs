@@ -30,7 +30,7 @@ namespace Macro_Recorder
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool UnhookWindowsHookEx(IntPtr hhk);
-        
+
         Form config = new Form2();
         bool active = false;
         bool recording = false;
@@ -91,6 +91,13 @@ namespace Macro_Recorder
                 keycord.Keyboard.KeyUp((VirtualKeyCode)key);
             }
         }
+
+        int sScreenx = GetSystemMetrics(0);
+        int sScreeny = GetSystemMetrics(1);
+
+        [DllImport("user32.dll")]
+        static extern int GetSystemMetrics(int nIndex);
+
         public struct Vector2
         {
             public int x;
@@ -302,6 +309,14 @@ namespace Macro_Recorder
             mouse_event(MOUSEEVENTF_RIGHTUP, X, Y, 0, 0);
         }
 
+        void MMove(int x, int y)
+        {
+            x = x * 65536 / sScreenx;
+            y = y * 65536 / sScreeny;
+
+            mouse_event((uint)0x8001, (uint)x, (uint)y, 0, 0);
+        }
+
         private async void cboType_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboType.Text == "Keyboard" || cboType.Text == "SmoothType")
@@ -446,7 +461,7 @@ namespace Macro_Recorder
                                 pointr.X = adjustX(pointr.X);
                                 pointr.Y = adjustY(pointr.Y);
 
-                                Cursor.Position = pointr;
+                                MMove(pointr.X, pointr.Y);
                             }
                             // SmoothMove
                             if (varInstructionType.Contains("SmoothMove"))
@@ -476,8 +491,7 @@ namespace Macro_Recorder
                                     int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance * 0.1))));
                                     int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance * 0.1))));
                                     
-                                    //Cursor.Position = new Point(tvx, tvy);
-                                    mouse_event((uint)0x01, (uint)(tvx - Cursor.Position.X), (uint)(tvy - Cursor.Position.Y), 0, 0);
+                                    MMove(tvx, tvy);
                                 }
                             }
                             // SmoothType
