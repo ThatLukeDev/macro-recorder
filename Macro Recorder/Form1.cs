@@ -68,6 +68,7 @@ namespace Macro_Recorder
         private static int WM_LBUTTONDBLCLK = 0x0203;
         private static int WM_MBUTTONDOWN = 0x0207;
         private static int WM_MBUTTONUP = 0x020;
+        private static int ABSOLUTE_MMOVE = 0x8000;
 
         public delegate IntPtr HookCallbackDelegate(int nCode, IntPtr wParam, IntPtr lParam);
 
@@ -474,7 +475,9 @@ namespace Macro_Recorder
                                     await Task.Delay(1);
                                     int tvx = Convert.ToInt32(currentx - (distancex * (Convert.ToDouble(i) / (distance * 0.1))));
                                     int tvy = Convert.ToInt32(currenty - (distancey * (Convert.ToDouble(i) / (distance * 0.1))));
-                                    Cursor.Position = new Point(tvx, tvy);
+                                    
+                                    //Cursor.Position = new Point(tvx, tvy);
+                                    mouse_event((uint)0x01, (uint)(tvx - Cursor.Position.X), (uint)(tvy - Cursor.Position.Y), 0, 0);
                                 }
                             }
                             // SmoothType
